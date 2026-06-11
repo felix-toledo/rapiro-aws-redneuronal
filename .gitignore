@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Datasets descargados / generados (se regeneran desde el notebook)
+dataset_final/
+dataset/
+*.zip
+
+# Sistema operativo
+Thumbs.db
+.DS_Store
