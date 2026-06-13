@@ -10,9 +10,9 @@ variable "aws_region" {
 }
 
 variable "instance_type" {
-  description = "Tipo de instancia EC2. t3.medium es suficiente para TF-CPU inference."
+  description = "Tipo de instancia EC2. t3.small es suficiente para TF-CPU inference."
   type        = string
-  default     = "t3.medium"
+  default     = "t3.small"
 }
 
 variable "ami_id" {
@@ -48,7 +48,7 @@ variable "api_port" {
 variable "repo_url" {
   description = "URL del repo GitHub público que se clona en user_data.sh."
   type        = string
-  default     = "https://github.com/TU-USUARIO/nuestro-codigo.git"   # TODO: actualizar
+  default     = "https://github.com/felix-toledo/rapiro-aws-redneuronal.git"
 }
 
 variable "project_name" {
