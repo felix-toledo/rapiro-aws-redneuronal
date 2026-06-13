@@ -1,0 +1,9 @@
+# edge/requirements.txt
+# Dependencias para los clientes edge (notebook y Raspberry Pi).
+# Instalar en la notebook o en la Pi según corresponda.
+
+requests==2.32.3          # HTTP client para llamar a la API
+pyserial==3.5             # serial para hablar con el Rapiro (solo Pi)
+opencv-python>=4.10.0.84  # captura de cámara — 4.10+ soporta NumPy 2.x
+                          # en la Pi usá opencv-python-headless si no hay GUI
+numpy>=1.26,<3            # rango compatible con opencv 4.10 y TF 2.21

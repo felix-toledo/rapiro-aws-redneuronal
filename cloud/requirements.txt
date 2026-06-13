@@ -1,0 +1,10 @@
+# cloud/requirements.txt
+# Dependencias para correr la API en EC2 (o local).
+# tensorflow-cpu para achicar la imagen Docker (~1 GB menos que tensorflow-gpu).
+
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+python-multipart==0.0.9     # necesario para File/UploadFile en FastAPI
+tensorflow-cpu==2.17.0      # 2.15.0 tenía bug con protobuf, resuelto en 2.17
+pillow==10.3.0
+numpy==1.26.4

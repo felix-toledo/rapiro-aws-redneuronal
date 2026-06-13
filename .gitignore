@@ -11,3 +11,8 @@ dataset/
 # Sistema operativo
 Thumbs.db
 .DS_Store
+
+venv/
+env/
+.venv/
+.env
