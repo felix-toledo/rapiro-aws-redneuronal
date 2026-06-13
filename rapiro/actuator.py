@@ -22,7 +22,7 @@ import signal
 import requests
 from dotenv import load_dotenv
 
-from rapiro_client import send_led_command
+from rapiro_client import run_behavior, build_behavior
 
 load_dotenv()
 
@@ -64,14 +64,15 @@ def poll_y_actuar() -> None:
         return
 
     _ultimo_ts = ts
-    r, g, b = int(color[0]), int(color[1]), int(color[2])
-
-    print(f"[rapiro] {clase} → R={r} G={g} B={b}")
+    rgb = (int(color[0]), int(color[1]), int(color[2]))
 
     if DRY_RUN:
+        cmds = " ".join(c for c, _ in build_behavior(clase, rgb))
+        print(f"[rapiro] {clase} → {cmds}")
         return
 
-    resultado = send_led_command(r, g, b)
+    print(f"[rapiro] {clase}")
+    resultado = run_behavior(clase, rgb)
     if not resultado["ok"]:
         print(f"[rapiro] ERROR serial: {resultado['message']}")
 

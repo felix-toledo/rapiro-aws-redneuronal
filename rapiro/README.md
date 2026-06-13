@@ -77,13 +77,36 @@ crontab -e
 
 ---
 
-## 5. Logs esperados
+## 5. Qué hace el Rapiro por cada clase
+
+Cada clasificación dispara un **gesto + color de ojos**. Los comandos y tiempos
+están verificados contra el firmware oficial (`RAPIRO_ver0_0.ino`) y el script
+probado en hardware real de grupo-stefi.
+
+| Clase | Gesto | Ojos |
+|-------|-------|------|
+| `plastico` | levanta brazo derecho (`#M6`) → home | amarillo |
+| `papel_carton` | mueve ambos brazos (`#M5`) → home | azul |
+| `metal` | levanta brazo izquierdo (`#M8`) → home | naranja |
+| `descarte_comun` | sacude la cabeza ("no") | rojo |
+| `no_identificado` | ladea la cabeza (duda) | blanco tenue |
+
+> No se usan los motions de caminar (`#M1`/`#M2`): el robot está sobre un
+> basurero y caminar lo haría caer. Solo brazos, cabeza y ojos.
+
+Para cambiar gestos o colores, editar `build_behavior()` en `rapiro_client.py`.
+
+## 6. Logs esperados
 
 ```
 [rapiro] iniciando (PRODUCCION) — http://54.x.x.x:8000
-[rapiro] plastico → R=255 G=255 B=0
-[rapiro] metal → R=255 G=128 B=0
+[rapiro] plastico
+[rapiro] metal
 [rapiro] detenido.
 ```
 
 Un log por clasificación. Silencioso el resto del tiempo.
+En `DRY_RUN` además imprime la secuencia de comandos que mandaría:
+```
+[rapiro] plastico → #M6 #M0 #PR255G255B000T010
+```
