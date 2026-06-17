@@ -52,6 +52,10 @@ ExecStartPre=-/usr/bin/docker rm rapiro-api
 ExecStart=/usr/bin/docker run \
     --name rapiro-api \
     -p ${api_port}:8000 \
+    --log-driver=awslogs \
+    --log-opt awslogs-region=us-east-1 \
+    --log-opt awslogs-group=/rapiro/api \
+    --log-opt awslogs-create-group=false \
     rapiro-api
 ExecStop=/usr/bin/docker stop rapiro-api
 

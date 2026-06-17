@@ -118,7 +118,24 @@ resource "aws_instance" "rapiro_api" {
 }
 
 # ---------------------------------------------------------------------------
-# CloudWatch: Log Group + Alarma de CPU alta
+# SNS: tópico de alertas + suscripción por email
+# ---------------------------------------------------------------------------
+# Las alarmas de CloudWatch publican acá, y SNS reenvía el aviso al mail.
+# OJO: tras el apply, AWS manda un mail de confirmación a var.alarm_email.
+#      HAY QUE HACER CLICK en "Confirm subscription" o no llegan los avisos.
+resource "aws_sns_topic" "rapiro_alertas" {
+  name = "${var.project_name}-alertas"
+  tags = { Project = var.project_name }
+}
+
+resource "aws_sns_topic_subscription" "email" {
+  topic_arn = aws_sns_topic.rapiro_alertas.arn
+  protocol  = "email"
+  endpoint  = var.alarm_email
+}
+
+# ---------------------------------------------------------------------------
+# CloudWatch: Log Group + Alarmas
 # ---------------------------------------------------------------------------
 resource "aws_cloudwatch_log_group" "rapiro_logs" {
   name              = "/rapiro/api"
@@ -126,6 +143,7 @@ resource "aws_cloudwatch_log_group" "rapiro_logs" {
   tags              = { Project = var.project_name }
 }
 
+# Alarma 1: CPU alta sostenida (modelo pesado saturando la t3.small)
 resource "aws_cloudwatch_metric_alarm" "cpu_alta" {
   alarm_name          = "${var.project_name}-cpu-alta"
   comparison_operator = "GreaterThanThreshold"
@@ -136,6 +154,33 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alta" {
   statistic           = "Average"
   threshold           = 80           # % de CPU
   alarm_description   = "CPU de la EC2 Rapiro supera el 80% durante 4 minutos"
+
+  # Avisos: dispara mail al entrar en alarma y otro al volver a la normalidad
+  alarm_actions = [aws_sns_topic.rapiro_alertas.arn]
+  ok_actions    = [aws_sns_topic.rapiro_alertas.arn]
+
+  dimensions = {
+    InstanceId = aws_instance.rapiro_api.id
+  }
+
+  tags = { Project = var.project_name }
+}
+
+# Alarma 2: la instancia falló sus status checks (sistema/instancia caída)
+# Esta es la que "llama la atención de verdad": si la EC2 se cuelga, te enterás.
+resource "aws_cloudwatch_metric_alarm" "status_check" {
+  alarm_name          = "${var.project_name}-status-check-fallido"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "StatusCheckFailed"
+  namespace           = "AWS/EC2"
+  period              = 60           # 1 minuto
+  statistic           = "Maximum"
+  threshold           = 0            # cualquier fallo (>0) dispara
+  alarm_description   = "La EC2 Rapiro falló sus status checks 2 min seguidos"
+
+  alarm_actions = [aws_sns_topic.rapiro_alertas.arn]
+  ok_actions    = [aws_sns_topic.rapiro_alertas.arn]
 
   dimensions = {
     InstanceId = aws_instance.rapiro_api.id

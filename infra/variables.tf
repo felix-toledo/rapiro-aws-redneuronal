@@ -56,3 +56,9 @@ variable "project_name" {
   type        = string
   default     = "rapiro"
 }
+
+variable "alarm_email" {
+  description = "Email donde llegan los avisos de las alarmas de CloudWatch (vía SNS). AWS pide confirmar la suscripción por mail tras el apply."
+  type        = string
+  default     = "felixtoledoctes@gmail.com"
+}
