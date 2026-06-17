@@ -9,6 +9,10 @@ dataset/
 dataset_propio/
 *.zip
 
+# Modelos entrenados (pesados, ~150MB; se suben al EC2 por scp, ver infra/DEPLOY_MODELO.md)
+models/*.keras
+models/*.h5
+
 # Terraform
 .terraform/
 *.tfstate

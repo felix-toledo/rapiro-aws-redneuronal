@@ -6,8 +6,8 @@ recibidas como bytes (desde el endpoint POST /clasificar).
 
 El preprocesado replica exactamente lo que hace src/predict_image.py:
   1. Decodificar bytes -> PIL Image (RGB)
-  2. Redimensionar a IMAGE_SIZE (128x128)
-  3. Convertir a array numpy con forma (1, 128, 128, 3)
+  2. Redimensionar a IMAGE_SIZE (224x224)
+  3. Convertir a array numpy con forma (1, 224, 224, 3)
   4. Pasar por el modelo (la capa Rescaling interna normaliza a [0, 1])
   5. Aplicar umbral de confianza; si no se supera -> "no_identificado"
 
@@ -36,7 +36,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 RUTA_MODELO = REPO_ROOT / "models" / "garbage_cnn_model.keras"
 RUTA_CLASS_INDICES = REPO_ROOT / "outputs" / "class_indices.json"
 
-IMAGE_SIZE = (128, 128)          # debe coincidir con el entrenamiento
+IMAGE_SIZE = (224, 224)          # debe coincidir con el entrenamiento
 UMBRAL_CONFIANZA = 0.60          # por debajo de esto -> no_identificado
 
 # ---------------------------------------------------------------------------
@@ -118,9 +118,9 @@ def classify_bytes(image_bytes: bytes) -> tuple[str, float, list[float]]:
     except Exception as exc:
         raise ValueError(f"No se pudo decodificar la imagen: {exc}") from exc
 
-    img = img.resize(IMAGE_SIZE)                            # (128, 128)
-    arr = np.array(img, dtype=np.float32)                  # (128, 128, 3)
-    lote = np.expand_dims(arr, axis=0)                     # (1, 128, 128, 3)
+    img = img.resize(IMAGE_SIZE)                            # (224, 224)
+    arr = np.array(img, dtype=np.float32)                  # (224, 224, 3)
+    lote = np.expand_dims(arr, axis=0)                     # (1, 224, 224, 3)
     # Nota: NO normalizamos a [0,1] aquí porque la capa Rescaling del modelo
     # lo hace internamente, igual que en el entrenamiento.
 
